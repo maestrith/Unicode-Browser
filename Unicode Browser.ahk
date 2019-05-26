@@ -10,10 +10,12 @@ Gui,Margin,0,0
 IniRead,Start,Settings.INI,Settings,Start,0
 IniRead,Count,Settings.INI,Settings,Count,66
 IniRead,Instructions,Settings.INI,Settings,Instructions,66
-Gui,Add,Edit,vStart w200,%Start%
-Gui,Add,Edit,x+M vCount w200
+Gui,Add,Edit,vStart w200 Number,%Start%
+Gui,Add,Edit,x+M vCount w200 Number
 Gui,Add,UpDown,Range10-200,%Count%
 Gui,Add,Checkbox,% "x+M vInstructions " (Instructions?"Checked":""),Instructions
+Gui,Add,Button,x+M gEnter,Next (Enter)
+Gui,Add,Button,x+M gBack,Back (Shift+Enter)
 Hotkey,IfWinActive,%ID%
 for a,b in {Enter:"Enter","+Enter":"Back"}
 	Hotkey,%a%,%b%,On
@@ -27,9 +29,9 @@ Start:=0
 return
 Class Unicode_Browser{
 	__New(Background:="Black",Color:="Pink"){
-		this.FixIE(11)
+		Ver:=this.FixIE(11)
 		Gui,Add,ActiveX,xm w%Width% h%Height% vwb,mshtml
-		wb.Navigate("about:blank")
+		wb.Navigate("about:blank"),this.FixIE(Ver)
 		while(wb.ReadyState!=4)
 			Sleep,10
 		this.Style:=(this.Body:=(this.Doc:=wb.Document).Body).Style
@@ -76,22 +78,20 @@ Class Unicode_Browser{
 			Char:=Format("{:04x}",A_Index+Start)
 			List.="<td UnSelectable='on' Name='" A_Index+Start "' Title='&#x" Char "`n`n#x" Char "' ID='#x" Char ";'>" "&#x" Char ";" (CC?"#x" Char:"")
 		}
-		Body:=List "</tr></table><Style>table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:50px}table td{Cursor:Hand}.ToolTipText{Visibility:Hidden}</Style>"
-		Body.=Instructions?("Enter to go to next set, Shift+Enter to go to previous set, Click an item to Copy its HTML Code, Shift+Click for Decimal, Ctrl+Click For Character"):""
+		Body:=List "</tr></table><Style>table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:50px}table td{Cursor:Hand;Text-Align:Center}</Style>"
+		Body.=Instructions?("Click an item to Copy its HTML Code, Shift+Click for Decimal, Ctrl+Click For Character"):""
 		this.Body.InnerHTML:=Body
 		Script:=this.Doc.CreateElement("Script")
 		Script.InnerText:="onclick=function(event){ahk_event('OnClick',event);" Chr(125) ";oncontextmenu=function(event){ahk_event('oncontextmenu',event)" Chr(125)
-		this.Body.AppendChild(Script)
-		this.Body.Style.OverFlow:="Auto"
-		this.Body.Style.Margin:="0px"
+		this.Body.AppendChild(Script),this.Body.Style.OverFlow:="Auto",this.Body.Style.Margin:="0px"
 		while(wb.ReadyState!=4&&wb.ReadyState!=1)
 			Sleep,10
 		Style:=this.Doc.GetElementsByTagName("Style").Item[0]
 		Table:=this.Doc.GetElementsByTagName("Table").Item[0]
 		Increment:=2,Size:=50
-		while(!Table.ScrollWidth){
+		while(!Table.ScrollWidth)
 			Sleep,10
-		}if(Table.ScrollWidth){
+		if(Table.ScrollWidth){
 			while(Table.ScrollWidth<Width){
 				Style.InnerText:="table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:" (Size:=Size+Increment) "px}"
 				if(Size>=100)
