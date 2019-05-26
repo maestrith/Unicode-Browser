@@ -70,7 +70,7 @@ Class Unicode_Browser{
 			Char:=Format("{:04x}",A_Index+Start)
 			List.="<td UnSelectable='on' Name='" A_Index+Start "' Title='&#x" Char "`n`n#x" Char "' ID='#x" Char ";'>" "&#x" Char ";" (CC?"#x" Char:"")
 		}
-		this.Body.InnerHTML:=List "</tr></table>Enter to go to next set, Shift+Enter to go to previous set, Click an item to Copy its Code, Shift+Click for Decimal<Style>table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:50px}table td{Cursor:Hand}.ToolTipText{Visibility:Hidden}</Style>"
+		this.Body.InnerHTML:=List "</tr></table>Enter to go to next set, Shift+Enter to go to previous set, Click an item to Copy its HTML Code, Shift+Click for Decimal<Style>table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:50px}table td{Cursor:Hand}.ToolTipText{Visibility:Hidden}</Style>"
 		Script:=this.Doc.CreateElement("Script")
 		Script.InnerText:="onclick=function(event){ahk_event('OnClick',event);" Chr(125) ";oncontextmenu=function(event){ahk_event('oncontextmenu',event)" Chr(125)
 		this.Body.AppendChild(Script)
