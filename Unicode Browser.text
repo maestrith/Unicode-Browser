@@ -1,3 +1,4 @@
 0.000.2
 Fixed:
 -An error when getting to a specific set of Unicode characters
+-Changed Decimal to Shift+Click
