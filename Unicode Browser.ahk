@@ -1,5 +1,5 @@
 #SingleInstance,Force
-global Doc,Body,wb,Width,Height,Count:=49,Start
+global Doc,Body,wb,Width,Height,Count:=49,Start,Instructions
 Width:=800
 Height:=600
 Gui,+HWNDMain
@@ -9,15 +9,18 @@ Gui,Color,0,0
 Gui,Margin,0,0
 IniRead,Start,Settings.INI,Settings,Start,0
 IniRead,Count,Settings.INI,Settings,Count,66
+IniRead,Instructions,Settings.INI,Settings,Instructions,66
 Gui,Add,Edit,vStart w200,%Start%
 Gui,Add,Edit,x+M vCount w200
 Gui,Add,UpDown,Range10-200,%Count%
+Gui,Add,Checkbox,% "x+M vInstructions " (Instructions?"Checked":""),Instructions
 Hotkey,IfWinActive,%ID%
 for a,b in {Enter:"Enter","+Enter":"Back"}
 	Hotkey,%a%,%b%,On
 Browser:=New Unicode_Browser("Black","Pink")
 GuiControl,+gStart,Edit1
 GuiControl,+gStart,Edit2
+GuiControl,+gStart,Button1
 Total:=462
 CC:=0
 Start:=0
@@ -39,7 +42,9 @@ Class Unicode_Browser{
 		static
 		Node:=Node.srcElement
 		CTRL:=this
-		if(GetKeyState("Shift"))
+		if(GetKeyState("CTRL"))
+			MsgBox,,Unicode Browser,% ((Clipboard:=Node.InnerText) " Coppied to the Clipboard"),1
+		else if(GetKeyState("Shift"))
 			MsgBox,,Unicode Browser,% ((Clipboard:=Node.GetAttribute("Name")) " Coppied to the Clipboard"),1
 		else
 			MsgBox,,Unicode Browser,% ((Clipboard:="&" Node.ID) " Coppied to the Clipboard"),1
@@ -59,6 +64,7 @@ Class Unicode_Browser{
 		return PreviousValue
 	}Show(Start:=100,CC:=0){
 		global
+		ControlGet,Instructions,Checked,,Button1,%ID%
 		Control:="Internet Explorer_Server1"
 		Control,Hide,,%Control%,A
 		Loop,%Count%
@@ -70,7 +76,9 @@ Class Unicode_Browser{
 			Char:=Format("{:04x}",A_Index+Start)
 			List.="<td UnSelectable='on' Name='" A_Index+Start "' Title='&#x" Char "`n`n#x" Char "' ID='#x" Char ";'>" "&#x" Char ";" (CC?"#x" Char:"")
 		}
-		this.Body.InnerHTML:=List "</tr></table>Enter to go to next set, Shift+Enter to go to previous set, Click an item to Copy its HTML Code, Shift+Click for Decimal<Style>table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:50px}table td{Cursor:Hand}.ToolTipText{Visibility:Hidden}</Style>"
+		Body:=List "</tr></table><Style>table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:50px}table td{Cursor:Hand}.ToolTipText{Visibility:Hidden}</Style>"
+		Body.=Instructions?("Enter to go to next set, Shift+Enter to go to previous set, Click an item to Copy its HTML Code, Shift+Click for Decimal, Ctrl+Click For Character"):""
+		this.Body.InnerHTML:=Body
 		Script:=this.Doc.CreateElement("Script")
 		Script.InnerText:="onclick=function(event){ahk_event('OnClick',event);" Chr(125) ";oncontextmenu=function(event){ahk_event('oncontextmenu',event)" Chr(125)
 		this.Body.AppendChild(Script)
@@ -80,7 +88,7 @@ Class Unicode_Browser{
 			Sleep,10
 		Style:=this.Doc.GetElementsByTagName("Style").Item[0]
 		Table:=this.Doc.GetElementsByTagName("Table").Item[0]
-		Increment:=5,Size:=50
+		Increment:=2,Size:=50
 		while(!Table.ScrollWidth){
 			Sleep,10
 		}if(Table.ScrollWidth){
@@ -125,5 +133,6 @@ GuiEscape:
 Gui,Submit,Nohide
 IniWrite,%Start%,Settings.INI,Settings,Start
 IniWrite,%Count%,Settings.INI,Settings,Count
+IniWrite,%Instructions%,Settings.INI,Settings,Instructions
 ExitApp
 return
