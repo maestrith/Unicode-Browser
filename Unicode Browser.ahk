@@ -86,12 +86,20 @@ Class Unicode_Browser{
 		}if(Table.ScrollWidth){
 			while(Table.ScrollWidth<Width){
 				Style.InnerText:="table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:" (Size:=Size+Increment) "px}"
+				if(Size>=100)
+					Break
 			}
 		}
-		while(this.Body.ScrollWidth>Width)
+		while(this.Body.ScrollWidth>Width){
 			Style.InnerText:="table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:" (Size:=Size-Increment) "px}"
-		while(this.Body.ScrollHeight>Height)
+			if(Size<10)
+				Break
+		}
+		while(this.Body.ScrollHeight>Height){
 			Style.InnerText:="table th,td{Border:1px Solid Grey;Padding:8px;Font-Size:" (Size:=Size-Increment) "px}"
+			if(Size<10)
+				Break
+		}
 		Control,Show,,%Control%,A
 		Gui,Show
 	}

@@ -1,2 +1,3 @@
-0.000.1
-Initial Upload
+0.000.2
+Fixed:
+-An error when getting to a specific set of Unicode characters
